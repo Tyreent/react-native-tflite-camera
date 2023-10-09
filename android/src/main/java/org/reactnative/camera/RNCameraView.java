@@ -31,7 +31,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.Result;
-
+import android.os.Environment;
 import org.reactnative.barcodedetector.RNBarcodeDetector;
 import org.reactnative.camera.tasks.BarCodeScannerAsyncTask;
 import org.reactnative.camera.tasks.BarCodeScannerAsyncTaskDelegate;
@@ -615,12 +615,10 @@ public class RNCameraView extends CameraView implements LifecycleEventListener, 
   }
 
   private MappedByteBuffer loadModelFile() throws IOException {
-    AssetFileDescriptor fileDescriptor = mThemedReactContext.getAssets().openFd(mModelFile);
-    FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
-    FileChannel fileChannel = inputStream.getChannel();
-    long startOffset = fileDescriptor.getStartOffset();
-    long declaredLength = fileDescriptor.getDeclaredLength();
-    return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
+    FileInputStream inputStreamCustom = new FileInputStream(Environment.getExternalStorageDirectory()+mModelFile);
+    FileChannel fileChannelCustom = inputStreamCustom.getChannel();
+    MappedByteBuffer buffer = fileChannelCustom.map(FileChannel.MapMode.READ_ONLY, 0, fileChannelCustom.size());
+    return buffer;
   }
 
   public void setModelFile(String modelFile, String labelFile, int inputDimX, int inputDimY, boolean quantized, int freqms) {
